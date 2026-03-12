@@ -1,6 +1,6 @@
 import torch
 import torch.nn as nn
-from torch.nn import functional as F # <--- Ajout indispensable
+from torch.nn import functional as F
 from torchvision import datasets, transforms
 from model import CLS_Classifier
 import os
