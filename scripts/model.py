@@ -8,7 +8,8 @@ class CLS_Classifier(nn.Module):
     def __init__(
         self,
         source_channel, # 3
-        unet_base_channel, # 128
+        unet_base_channel,
+        num_classes,        # <--- TU AJOUTES CETTE LIGNE ICI # 128
         num_norm_groups, # 32
         head_dim, # 64
     ):
