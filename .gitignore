@@ -1,0 +1,6 @@
+env_ddpm/
+venv/
+__pycache__/
+.DS_Store
+data/
+models/*.pth
