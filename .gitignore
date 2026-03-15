@@ -1,4 +1,22 @@
+# Dossiers virtuels et cache
 env_ddpm/
+venv/
+__pycache__/
+.DS_Store
+
+# Données
+data/
+
+# Checkpoints et modèles (Trés important !)
+*.pt
+*.pth
+classifier_models/
+diffusion_model_checkpoints/
+
+# Logs et sorties
+*.log
+results.out
+figures/env_ddpm/
 venv/
 __pycache__/
 .DS_Store
