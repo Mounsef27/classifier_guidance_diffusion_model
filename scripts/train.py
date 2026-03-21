@@ -9,33 +9,55 @@ import os
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 batch_size = 64
 
-# --- Data Preparation ---
-transform = transforms.Compose([
-    transforms.Resize(32),        
-    transforms.ToTensor(),
-    transforms.Normalize((0.5,), (0.5,)) 
-])
+# --- Configuration ---
+data = 'cifar_10'  # ou 'mnist'
+batch_size = 128
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-# Le dossier data sera créé dans classifier_guidance_diffusion_model/data
-dataset = datasets.MNIST(root="../data", train=True, download=True, transform=transform)
+# --- Data Preparation & Model Config ---
+if data == 'mnist':
+    # MNIST : 1 canal (Grayscale), 28x28 resize en 32x32
+    transform = transforms.Compose([
+        transforms.Resize(32),        
+        transforms.ToTensor(),
+        transforms.Normalize((0.5,), (0.5,)) 
+    ])
+    dataset = datasets.MNIST(root="../data", train=True, download=True, transform=transform)
+    source_channel = 1
+    num_classes = 10
+    classes = [str(i) for i in range(10)]
+
+elif data == 'cifar_10':
+    # CIFAR-10 : 3 canaux (RGB), déjà en 32x32
+    transform = transforms.Compose([
+        transforms.ToTensor(),
+        transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5)) 
+    ])
+    dataset = datasets.CIFAR10(root="../data", train=True, download=True, transform=transform)
+    source_channel = 3
+    num_classes = 10
+    classes = ['airplane', 'automobile', 'bird', 'cat', 'deer', 'dog', 'frog', 'horse', 'ship', 'truck']
+
+# DataLoader commun
 loader = torch.utils.data.DataLoader(dataset, batch_size=batch_size, shuffle=True, num_workers=2)
-# Configuration des classes pour MNIST
-num_classes = 10
-classes = [str(i) for i in range(10)] # ["0", "1", "2", ..., "9"]
-# --- Model Initialization ---
+
+# --- Classifier Initialization ---
+# source_channel et num_classes s'adaptent automatiquement
 classifier = CLS_Classifier(
-    source_channel=1, 
-    num_classes=10,
+    source_channel=source_channel, 
+    num_classes=num_classes,
     unet_base_channel=128,
     num_norm_groups=32,
     head_dim=64,
 ).to(device)
 
 # --- Préparation du stockage ---
-checkpoint_dir = "../classifier_models" # Stockage en dehors de /scripts
+# Dossier spécifique par dataset pour ne pas mélanger les poids
+checkpoint_dir = f"../classifier_models_{data}" 
 os.makedirs(checkpoint_dir, exist_ok=True)
 
-log_file = "train_loss.log"
+# Log file spécifique
+log_file = f"train_classifier_{data}.log"
 if os.path.exists(log_file):
     os.remove(log_file)
 

@@ -92,7 +92,7 @@ if __name__ == "__main__":
     class_list = [str(i) for i in range(10)]
 
     # 4. GÉNÉRATION MASSIVE (Tests pour tous les chiffres)
-    guidance_scales = [-1,0.0, 2.0, 6.0]
+    guidance_scales =[0,5,50,100]
     
     for digit in class_list:
         for gs in guidance_scales:
